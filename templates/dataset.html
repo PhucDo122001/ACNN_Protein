@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <title>Protein - Lingad Data</title>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('home') }}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('list_protein') }}">Protein</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('ligands') }}">Ligand</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('dataset') }}">Dataset</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <div class="container mt-5">
+    <h2>Search Protein - Lingad Data</h2>
+    <form method="get" action="/dataset">
+      <div class="form-group">
+        <label for="protein_name">Enter Protein or ligand Name:</label>
+        <input type="text" class="form-control" value="{{ pname }}" id="protein_name" name="protein_name">
+      </div>
+      <div class="form-group">
+        <label for="protein_name">Enter pdbcode:</label>
+        <input type="text" class="form-control" value="{{ code }}" id="code" name="code">
+      </div>
+      <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+  </div>
+
+  <div class="container mt-5">
+    <h2>Protein - Lingad Data</h2>
+    <table class="table table-bordered table-hover">
+      <thead>
+        <tr>
+          <th>PDB Code</th>
+          <th>Resolution</th>
+          <th>Release Year</th>
+          <th>Binding Data</th>
+          <th>Reference</th>
+          <th>Ligand Name</th>
+          <th>Protein Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in lingads_list %}
+        <tr>
+          <td>{{ row.pdb_code }}</td>
+          <td>{{ row.resolution }}</td>
+          <td>{{ row.release_year }}</td>
+          <td>{{ row.binding_data }}</td>
+          <td>{{ row.reference }}</td>
+          <td><a href="{{ url_for('ligand_info', code=row.ligand_name) }}">{{ row.ligand_name }}</a></td>
+          <td>{{ row.protein_name }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <nav aria-label="Page navigation">
+      <p>Total Records: {{ total }}</p>
+      <p>Showing 20 records per page</p>
+      <div class="pagination">
+        {% if ppage %}
+        <li class="page-item"><a class="page-link" href="?protein_name={{ pname }}&&page={{ppage}}">Prev</a></li>
+        {% endif %}
+        <li class="page-item"><a class="page-link">{{page}}</a></li>
+        {% if npage %}
+        <li class="page-item"><a class="page-link" href="?protein_name={{ pname }}&&page={{npage}}">Next</a></li>
+        {% endif %}
+      </div>
+    </nav>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>
