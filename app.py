@@ -280,17 +280,18 @@ def home():
         if ligand is None or protein is None:
             return render_template('home.html', ligands=ligands, proteins=lproteins, lcode=lid,pid=pid, selected_ligand= selected_ligand, selected_protein=selected_protein, error = "Not fond data in DB")
 
-        # url = "127.0.0.1:5001/?ligand=%s&protein=%s" % (ligand[0],protein[0])
+        url = "http://127.0.0.1:5001?ligand=%s&protein=%s" % (ligand[0],protein[0])
 
-        random_integer = random.randint(1, 100)
-        # response = requests.request("GET", url, headers={
-        # 'Content-Type': 'application/json'
-        # })
-        # if response.status_code == 200:
-        #     print(response.json())
-        # else:
-        #     return render_template('home.html', ligands=ligands, proteins=lproteins, lcode=lid,pid=pid, selected_ligand= selected_ligand, selected_protein=selected_protein, error = "Model run fail")
-        return render_template('home.html', ligands=ligands, proteins=lproteins, lcode=lid,pid=pid, selected_ligand= selected_ligand, selected_protein=selected_protein, lpdb_code = ligand[0], ppdb_code = protein[0],result =random_integer/100)
+      
+        response = requests.request("GET", url, headers={
+        'Content-Type': 'application/json'
+        })
+        if response.status_code == 200:
+            json_data = response.json()
+            result_value = round(json_data['result'][0], 2)
+        else:
+            return render_template('home.html', ligands=ligands, proteins=lproteins, lcode=lid,pid=pid, selected_ligand= selected_ligand, selected_protein=selected_protein, error = "Model run fail")
+        return render_template('home.html', ligands=ligands, proteins=lproteins, lcode=lid,pid=pid, selected_ligand= selected_ligand, selected_protein=selected_protein, lpdb_code = ligand[0], ppdb_code = protein[0],result =result_value)
     
     return render_template('home.html', ligands=ligands, proteins=lproteins, lcode=lid,pid=pid)
 
@@ -299,4 +300,4 @@ def display(code):
     return render_template('display/'+ code +'.html')
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0",port=5000)
+    app.run(host="0.0.0.0",port=5005)

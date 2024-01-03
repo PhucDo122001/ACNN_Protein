@@ -63,22 +63,21 @@ def val_cb(model, step):
 
 acm.fit(train, nb_epoch=max_epochs, max_checkpoints_to_keep=1,
                 callbacks=[val_cb])
-# ligand_pdbcode ="3zsx"    
-# protein_pdbcode ="3zsx"   
-from load_input import load_input
+import pandas as pd
+index_labels_file = "./v2013-core/pdbbind_v2013_core.csv"
+data_folder = "./v2013-core/"
+df = pd.read_csv(index_labels_file)
+pdbs = df.pdb_id.tolist()
+protein_files = [
+                os.path.join(data_folder, pdb, "%s_pocket.pdb" % pdb)
+                for pdb in pdbs[:2]
+            ]
+     
+ligand_files = [
+            os.path.join(data_folder, pdb, "%s_ligand.sdf" % pdb)
+            for pdb in pdbs[:2]
+        ]
 
-# tasks, [train, val, test], transformers = load_input(featurizer=acf,
-#                                                 save_dir='.',
-#                                                 data_dir='.',
-#                                                 pocket=True,
-#                                                 reload=False,
-#                                                 protein_pdbcode=protein_pdbcode,
-#                                                 ligand_pdbcode=ligand_pdbcode,
-#                                                 set_name='core')
-
-# npa = acm.predict(test)
-# print(npa)
-print("done test")
 from flask import Flask, flash, redirect, url_for,request,jsonify
 
 app = Flask(__name__)
@@ -92,16 +91,10 @@ def login():
         if ligand_pdbcode is None or protein_pdbcode is None:
             ligand_pdbcode ="3zsx"    
             protein_pdbcode ="3zsx"    
-        print(ligand_pdbcode)
-        print(protein_pdbcode)
-        tasks, [train, val, input], transformers = load_input(featurizer=acf,
-                                                save_dir='.',
-                                                data_dir='.',
-                                                pocket=True,
-                                                reload=False,
-                                                protein_pdbcode=protein_pdbcode,
-                                                ligand_pdbcode=ligand_pdbcode,
-                                                set_name='core')
+        protein_files[0] = os.path.join(data_folder, protein_pdbcode, "%s_pocket.pdb" % protein_pdbcode)
+        ligand_files[0] =os.path.join(data_folder, ligand_pdbcode, "%s_ligand.sdf" % ligand_pdbcode) 
+        f2 = acf.featurize(list(zip(ligand_files, protein_files)))
+        input = dc.data.DiskDataset.from_numpy(f2)
         npa = acm.predict(input)
         response_data = {
             "result": npa[0][0].tolist()
