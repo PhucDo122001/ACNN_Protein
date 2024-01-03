@@ -6,7 +6,7 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 
-from deepchem.molnet import load_pdbbind
+from load_input import load_pdbbind
 from deepchem.models import AtomicConvModel
 from deepchem.feat import AtomicConvFeaturizer
 

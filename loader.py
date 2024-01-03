@@ -135,7 +135,7 @@ class _MolnetLoader(object):
     self.args = kwargs
 
   def load_dataset(
-      self, name: str,protein_pdbcode: str,ligand_pdbcode: str, reload: bool
+      self, name: str, reload: bool
   ) -> Tuple[List[str], Tuple[Dataset, ...], List[dc.trans.Transformer]]:
     """Load the dataset.
 
@@ -174,7 +174,8 @@ class _MolnetLoader(object):
     # Create the dataset
 
     logger.info("About to featurize %s dataset." % name)
-    dataset = self.create_dataset(protein_pdbcode, ligand_pdbcode)
+    dataset = self.create_dataset()
+
     # Split and transform the dataset.
 
     if self.splitter is None:
@@ -196,10 +197,6 @@ class _MolnetLoader(object):
         dc.utils.data_utils.save_transformers(save_folder, transformers)
       return self.tasks, (dataset,), transformers
 
-    for transformer in transformers:
-      train = transformer.transform(train)
-      valid = transformer.transform(valid)
-      test = transformer.transform(test)
     if reload and isinstance(train, DiskDataset) and isinstance(
         valid, DiskDataset) and isinstance(test, DiskDataset):
       dc.utils.data_utils.save_dataset_to_disk(save_folder, train, valid, test,
