@@ -25,7 +25,7 @@ lingads = Table(
     Column('resolution', Float),
     Column('release_year', Integer),
     Column('binding_data', String(20)),
-    Column('logKd/Ki', String(20)),
+    Column('logKdKi', String(20)),
     Column('reference', String(255)),
     Column('ligand_name', String(50)),
     extend_existing=True
@@ -149,6 +149,7 @@ def dataset():
             {
                 'pdb_code': row.pdb_code,
                 'resolution': row.resolution,
+                'logKdKi' : row.logKdKi,
                 'release_year': row.release_year,
                 'binding_data': row.binding_data,
                 'reference': row.reference,
