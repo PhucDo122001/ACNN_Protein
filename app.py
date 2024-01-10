@@ -258,13 +258,9 @@ folder_path = './upload'
 def home():
     lid = request.form.get('ligand')
     protein_name = request.form.get('protein')
-    file_list = os.listdir(folder_path)
-    lproteins = []
-    for filename in file_list:
-        if "_pocket.pdb" in filename:
-            print(filename)
-            lproteins.append(filename.replace("_pocket.pdb", ""))
     ligands = LingadInfo.query.all()
+    
+   
     if request.method == 'POST':
         selected_ligand = LingadInfo.query.filter_by(id=lid).first()
         ligand = (
@@ -275,9 +271,10 @@ def home():
                 ),
             ).first()
         )
-        
+        if not os.path.exists("./upload/%s_pocket.pdb" % protein_name):
+            return render_template('home.html', ligands=ligands, lcode=lid, selected_ligand= selected_ligand, error = "File %s_pocket.pdb not found" %protein_name, protein_name=protein_name)
         if ligand is None or protein_name is None:
-            return render_template('home.html', ligands=ligands, proteins=lproteins, lcode=lid, selected_ligand= selected_ligand, error = "Not fond data in DB")
+            return render_template('home.html', ligands=ligands, lcode=lid, selected_ligand= selected_ligand, error = "Not fond data in DB",protein_name=protein_name)
         url = "http://127.0.0.1:5001?ligand=%s&protein=%s" % (ligand[0],protein_name)
 
       
@@ -288,10 +285,10 @@ def home():
             json_data = response.json()
             result_value = round(json_data['result'][0], 2)
         else:
-            return render_template('home.html', ligands=ligands, proteins=lproteins, lcode=lid, selected_ligand= selected_ligand, error = "Model run fail")
-        return render_template('home.html', ligands=ligands, proteins=lproteins, lcode=lid, selected_ligand= selected_ligand, lpdb_code = ligand[0], protein_name = protein_name,result =result_value)
+            return render_template('home.html', ligands=ligands, lcode=lid, selected_ligand= selected_ligand, error = "Model run fail")
+        return render_template('home.html', ligands=ligands, lcode=lid, selected_ligand= selected_ligand, lpdb_code = ligand[0], protein_name = protein_name,result =result_value)
     
-    return render_template('home.html', ligands=ligands, proteins=lproteins, lcode=lid)
+    return render_template('home.html', ligands=ligands, lcode=lid)
 
 @app.route('/display/<string:code>', methods=['GET'])
 def display(code):

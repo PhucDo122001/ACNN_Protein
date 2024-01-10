@@ -24,6 +24,7 @@
 </head>
 
 <body>
+
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,6 +51,11 @@
         </div>
     </nav>
     <div class="container mt-5">
+        {% if error %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+        {% endif %}
         <h2 class="mb-4">Select Ligand and Protein</h2>
 
         <form method="post" action="{{ url_for('home') }}">
@@ -65,24 +71,13 @@
             </div>
 
             <div class="form-group">
-                <label for="protein">Select Protein</label>
-                <select class="form-control" id="protein" name="protein">
-                    {% for protein in proteins %}
-                    <option value="{{ protein }}" {% if protein == protein_name %}selected{% endif %}>{{ protein }}
-                    </option>
-                    {% endfor %}
-                </select>
-
+                <label for="protein">Entry Protein</label>
+                <input type="text" class="form-control" value="{{ protein_name }}" name="protein" required>
 
             </div>
 
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
-        {% if error %}
-        <div class="alert alert-danger" role="alert">
-            {{ error }}
-        </div>
-        {% endif %}
 
         {% if selected_ligand and lpdb_code%}
 
