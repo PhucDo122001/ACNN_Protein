@@ -57,7 +57,7 @@
                 <label for="ligand">Select Ligand</label>
                 <select class="form-control" id="ligand" name="ligand">
                     {% for ligand in ligands %}
-                    <option value="{{ ligand.id }} {% if ligand.id == lid %}selected{% endif %}">{{ ligand.code }}
+                    <option value="{{ ligand.id }}" {% if ligand.id == lid %}selected{% endif %}>{{ ligand.code }}
                     </option>
                     {% endfor %}
                 </select>
@@ -68,7 +68,7 @@
                 <label for="protein">Select Protein</label>
                 <select class="form-control" id="protein" name="protein">
                     {% for protein in proteins %}
-                    <option value="{{ protein.id }} {% if protein.id == pid %}selected{% endif %}">{{ protein.name }}
+                    <option value="{{ protein }}" {% if protein == protein_name %}selected{% endif %}>{{ protein }}
                     </option>
                     {% endfor %}
                 </select>
@@ -84,7 +84,7 @@
         </div>
         {% endif %}
 
-        {% if selected_ligand and selected_protein and lpdb_code%}
+        {% if selected_ligand and lpdb_code%}
 
         <div class="row text-center ">
             <div class="col-sm-5">
@@ -102,11 +102,10 @@
                 </div>
             </div>
             <div class="col-sm-5">
-                <h1>{{ selected_protein.name}}</h1>
+                <h1>{{ protein_name}}</h1>
 
-                <p>Info: {{ selected_protein.additional_info }}</p>
-                {% if ppdb_code %}
-                    <iframe src="display/protein_{{ ppdb_code }}"></iframe>
+                {% if protein_name %}
+                    <iframe src="display/protein_{{ protein_name }}"></iframe>
                 {% endif %}
             </div>
         </div>

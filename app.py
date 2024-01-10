@@ -248,19 +248,25 @@ def list_protein():
     return render_template('protein_list.html', proteins=protein_list)
 
 import requests
-import random
+import os
+
+folder_path = './upload'
+
 
 @app.route('/', methods=['GET','POST'])
 @login_required
 def home():
     lid = request.form.get('ligand')
-    pid = request.form.get('protein')
-    
+    protein_name = request.form.get('protein')
+    file_list = os.listdir(folder_path)
+    lproteins = []
+    for filename in file_list:
+        if "_pocket.pdb" in filename:
+            print(filename)
+            lproteins.append(filename.replace("_pocket.pdb", ""))
     ligands = LingadInfo.query.all()
-    lproteins = ProteinInfo.query.all()
     if request.method == 'POST':
         selected_ligand = LingadInfo.query.filter_by(id=lid).first()
-        selected_protein = ProteinInfo.query.filter_by(id=pid).first()
         ligand = (
             db.session.query(lingads)
             .filter( 
@@ -269,19 +275,10 @@ def home():
                 ),
             ).first()
         )
-        protein = (
-            db.session.query(proteins)
-            .filter( 
-                or_(
-                Proteins.protein_name.ilike(f'%{selected_protein.name}%'),
-                ),
-            ).first()
-        )
         
-        if ligand is None or protein is None:
-            return render_template('home.html', ligands=ligands, proteins=lproteins, lcode=lid,pid=pid, selected_ligand= selected_ligand, selected_protein=selected_protein, error = "Not fond data in DB")
-
-        url = "http://127.0.0.1:5001?ligand=%s&protein=%s" % (ligand[0],protein[0])
+        if ligand is None or protein_name is None:
+            return render_template('home.html', ligands=ligands, proteins=lproteins, lcode=lid, selected_ligand= selected_ligand, error = "Not fond data in DB")
+        url = "http://127.0.0.1:5001?ligand=%s&protein=%s" % (ligand[0],protein_name)
 
       
         response = requests.request("GET", url, headers={
@@ -291,10 +288,10 @@ def home():
             json_data = response.json()
             result_value = round(json_data['result'][0], 2)
         else:
-            return render_template('home.html', ligands=ligands, proteins=lproteins, lcode=lid,pid=pid, selected_ligand= selected_ligand, selected_protein=selected_protein, error = "Model run fail")
-        return render_template('home.html', ligands=ligands, proteins=lproteins, lcode=lid,pid=pid, selected_ligand= selected_ligand, selected_protein=selected_protein, lpdb_code = ligand[0], ppdb_code = protein[0],result =result_value)
+            return render_template('home.html', ligands=ligands, proteins=lproteins, lcode=lid, selected_ligand= selected_ligand, error = "Model run fail")
+        return render_template('home.html', ligands=ligands, proteins=lproteins, lcode=lid, selected_ligand= selected_ligand, lpdb_code = ligand[0], protein_name = protein_name,result =result_value)
     
-    return render_template('home.html', ligands=ligands, proteins=lproteins, lcode=lid,pid=pid)
+    return render_template('home.html', ligands=ligands, proteins=lproteins, lcode=lid)
 
 @app.route('/display/<string:code>', methods=['GET'])
 def display(code):

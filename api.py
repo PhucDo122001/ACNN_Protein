@@ -66,6 +66,7 @@ acm.fit(train, nb_epoch=max_epochs, max_checkpoints_to_keep=1,
 import pandas as pd
 index_labels_file = "./v2013-core/pdbbind_v2013_core.csv"
 data_folder = "./v2013-core/"
+upload_folder = "./upload/"
 df = pd.read_csv(index_labels_file)
 pdbs = df.pdb_id.tolist()
 protein_files = [
@@ -83,15 +84,37 @@ from flask import Flask, flash, redirect, url_for,request,jsonify
 app = Flask(__name__)
 app.secret_key = "your_secret_key"  # Required for flash messages
 
+# @app.route('/', methods=['GET'])
+# def login():
+#     try:
+#         ligand_pdbcode = request.args.get("ligand")
+#         protein_pdbcode = request.args.get("protein")
+#         if ligand_pdbcode is None or protein_pdbcode is None:
+#             ligand_pdbcode ="3zsx"    
+#             protein_pdbcode ="3zsx"    
+#         protein_files[0] = os.path.join(data_folder, protein_pdbcode, "%s_pocket.pdb" % protein_pdbcode)
+#         ligand_files[0] =os.path.join(data_folder, ligand_pdbcode, "%s_ligand.sdf" % ligand_pdbcode) 
+#         f2 = acf.featurize(list(zip(ligand_files, protein_files)))
+#         input = dc.data.DiskDataset.from_numpy(f2)
+#         npa = acm.predict(input)
+#         response_data = {
+#             "result": npa[0][0].tolist()
+#         }
+
+#         return jsonify(response_data)
+#     except Exception as e:
+#         print(e)
+#         return jsonify({"error": "error"}), 400
+
 @app.route('/', methods=['GET'])
 def login():
     try:
         ligand_pdbcode = request.args.get("ligand")
-        protein_pdbcode = request.args.get("protein")
-        if ligand_pdbcode is None or protein_pdbcode is None:
+        protein_name = request.args.get("protein")
+        if ligand_pdbcode is None or protein_name is None:
             ligand_pdbcode ="3zsx"    
-            protein_pdbcode ="3zsx"    
-        protein_files[0] = os.path.join(data_folder, protein_pdbcode, "%s_pocket.pdb" % protein_pdbcode)
+            protein_name ="phuc"    
+        protein_files[0] = os.path.join(upload_folder, "%s_pocket.pdb" % protein_name)
         ligand_files[0] =os.path.join(data_folder, ligand_pdbcode, "%s_ligand.sdf" % ligand_pdbcode) 
         f2 = acf.featurize(list(zip(ligand_files, protein_files)))
         input = dc.data.DiskDataset.from_numpy(f2)
