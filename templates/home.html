@@ -98,10 +98,13 @@
             </div>
             <div class="col-sm-5">
                 <h1>{{ protein_name}}</h1>
-
+                {% if protein %}
+                <p>Info: {{ protein.additional_info }}</p>
+                {% endif %}
                 {% if protein_name %}
                     <iframe src="display/protein_{{ protein_name }}"></iframe>
                 {% endif %}
+                
             </div>
         </div>
         {% endif %}

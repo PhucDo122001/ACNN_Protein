@@ -294,9 +294,18 @@ def home():
                 ),
             ).first()
         )
+        
+        protein = (
+            db.session.query(proteins)
+            .filter( 
+                or_(
+                Proteins.name.ilike(f'%{protein_name}%'),
+                ),
+            ).first()
+        )
         if not os.path.exists("./upload/%s_pocket.pdb" % protein_name):
             return render_template('home.html', ligands=ligands, lcode=lid, selected_ligand= selected_ligand, error = "File %s_pocket.pdb not found" %protein_name, protein_name=protein_name)
-        if ligand is None or protein_name is None:
+        if ligand is None or protein is None:
             return render_template('home.html', ligands=ligands, lcode=lid, selected_ligand= selected_ligand, error = "Not fond data in DB",protein_name=protein_name)
         url = "http://127.0.0.1:5001?ligand=%s&protein=%s" % (ligand[0],protein_name)
 
@@ -309,7 +318,7 @@ def home():
             result_value = round(json_data['result'][0], 2)
         else:
             return render_template('home.html', ligands=ligands, lcode=lid, selected_ligand= selected_ligand, error = "Model run fail")
-        return render_template('home.html', ligands=ligands, lcode=lid, selected_ligand= selected_ligand, lpdb_code = ligand[0], protein_name = protein_name,result =result_value)
+        return render_template('home.html', ligands=ligands, lcode=lid, selected_ligand= selected_ligand, lpdb_code = ligand[0], protein_name = protein_name,result =result_value,protein=protein)
     
     return render_template('home.html', ligands=ligands, lcode=lid)
 
