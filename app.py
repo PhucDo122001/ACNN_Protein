@@ -72,6 +72,7 @@ proteinInfo = Table (
 # Create an engine and bind it to the metadata
 engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'], echo=True)
 metadata.create_all(engine)
+folder_path = './upload'
 
 class Lingads(db.Model):
     __table__ = lingads
@@ -222,12 +223,35 @@ def ligands():
     return render_template('ligand_list.html', ligands=ligand_list)
 
 
+from rdkit import Chem
+from openmm.app import PDBFile
+from pdbfixer import PDBFixer
+import mdtraj as md
+import nglview
+from deepchem.utils.vina_utils import prepare_inputs
 @app.route('/add/protein', methods=['GET','POST'])
 @login_required
 def protein():
     if request.method == 'POST':
         name = request.form['name']
         additional_info = request.form['additional_info']
+        protein_file = request.files['protein_file']
+        pocket_file = request.files['pocket_file']
+        
+        protein_file.save(folder_path + "/%s_protein.pdb" % (name))
+        pocket_file.save(folder_path + "/%s_pocket.pdb" % (name))
+        
+        fixer = PDBFixer(filename=folder_path + "/%s_protein.pdb" % (name))
+
+        PDBFile.writeFile(fixer.topology, fixer.positions, open('templates/display/%s.pdb' % (name), 'w'))
+        p, m = None, None
+        p, m = prepare_inputs('templates/display/%s.pdb' % (name), "C")
+        if p and m:  
+            Chem.rdmolfiles.MolToPDBFile(p, 'templates/display/protein_%s.pdb' % (name))
+                
+        protein_mdtraj = md.load_pdb( 'templates/display/protein_%s.pdb' % (name))
+        p = nglview.show_mdtraj(protein_mdtraj)
+        nglview.write_html("templates/display/protein_%s.html" % (name),[p])
         
         new_data = ProteinInfo(
             name=name,
@@ -250,7 +274,6 @@ def list_protein():
 import requests
 import os
 
-folder_path = './upload'
 
 
 @app.route('/', methods=['GET','POST'])

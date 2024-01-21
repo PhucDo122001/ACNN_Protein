@@ -37,7 +37,7 @@
     <div class="container mt-5">
         <h2 class="mb-4">Add Protein</h2>
 
-        <form method="post" action="">
+        <form method="post" action="" enctype="multipart/form-data">
             <!-- Add your form fields for protein data -->
             <div class="form-group">
                 <label for="name">Name</label>
@@ -47,6 +47,14 @@
             <div class="form-group">
                 <label for="additional_info">Additional Info</label>
                 <textarea class="form-control" id="additional_info" name="additional_info"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="additional_info">Protein file</label>
+                <input type="file" name="protein_file" accept=".pdb" required>
+            </div>
+            <div class="form-group">
+                <label for="additional_info">Pocket file</label>
+                <input type="file" name="pocket_file" accept=".pdb" required>
             </div>
             <button type="submit" class="btn btn-primary">Add Protein</button>
         </form>
