@@ -296,10 +296,10 @@ def home():
         )
         
         protein = (
-            db.session.query(proteins)
+            db.session.query(proteinInfo)
             .filter( 
                 or_(
-                Proteins.name.ilike(f'%{protein_name}%'),
+                ProteinInfo.name.ilike(f'%{protein_name}%'),
                 ),
             ).first()
         )
@@ -318,6 +318,7 @@ def home():
             result_value = round(json_data['result'][0], 2)
         else:
             return render_template('home.html', ligands=ligands, lcode=lid, selected_ligand= selected_ligand, error = "Model run fail")
+        
         return render_template('home.html', ligands=ligands, lcode=lid, selected_ligand= selected_ligand, lpdb_code = ligand[0], protein_name = protein_name,result =result_value,protein=protein)
     
     return render_template('home.html', ligands=ligands, lcode=lid)
